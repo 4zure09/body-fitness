@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: body_fitness
+      POSTGRES_USER: body_fitness
+      POSTGRES_PASSWORD: body_fitness
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U body_fitness -d body_fitness"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+    environment:
+      APP_ENV: local
+      HTTP_ADDRESS: :8080
+      DATABASE_DSN: postgres://body_fitness:body_fitness@postgres:5432/body_fitness?sslmode=disable
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+

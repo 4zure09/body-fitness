@@ -1,0 +1,3 @@
+-- name: GetDatabaseTime :one
+SELECT CURRENT_TIMESTAMP AS database_time;
+

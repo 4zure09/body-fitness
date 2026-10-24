@@ -1,0 +1,56 @@
+openapi: 3.1.0
+info:
+  title: Body Fitness API
+  version: 0.1.0
+  description: >-
+    API hỗ trợ quản lý bài tập, dinh dưỡng, chế độ cá nhân và tiến độ.
+    Nội dung tư vấn chỉ mang tính tham khảo, không thay thế tư vấn y khoa.
+servers:
+  - url: http://localhost:8080
+    description: Local development
+paths:
+  /health/live:
+    get:
+      operationId: getLiveness
+      summary: Kiểm tra tiến trình API còn hoạt động
+      responses:
+        "200":
+          description: API process is alive
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /health/ready:
+    get:
+      operationId: getReadiness
+      summary: Kiểm tra API sẵn sàng nhận request
+      responses:
+        "200":
+          description: API and required dependencies are ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+        "503":
+          description: At least one required dependency is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status, checked_at]
+      properties:
+        status:
+          type: string
+          examples: [ok]
+        checked_at:
+          type: string
+          format: date-time
+        components:
+          type: object
+          additionalProperties:
+            type: string
+

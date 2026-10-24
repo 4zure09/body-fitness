@@ -1,0 +1,22 @@
+# Binaries and build output
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Tooling
+.idea/
+.vscode/
+.DS_Store
+coverage.out
+
+# Local data
+/.data/
+/.cache/
+
