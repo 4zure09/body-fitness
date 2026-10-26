@@ -22,6 +22,11 @@ services:
       APP_ENV: local
       HTTP_ADDRESS: :8080
       DATABASE_DSN: postgres://body_fitness:body_fitness@postgres:5432/body_fitness?sslmode=disable
+      JWT_SECRET: local-development-secret-change-before-production-2026
+      JWT_ISSUER: body-fitness
+      JWT_AUDIENCE: body-fitness-api
+      JWT_ACCESS_TTL: 15m
+      JWT_REFRESH_TTL: 720h
     ports:
       - "8080:8080"
     depends_on:

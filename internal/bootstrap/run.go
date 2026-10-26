@@ -8,6 +8,11 @@ import (
 	"net/http"
 	"time"
 
+	authapp "github.com/4zure09/body-fitness/internal/modules/auth/application"
+	"github.com/4zure09/body-fitness/internal/modules/auth/infrastructure/password"
+	authrepo "github.com/4zure09/body-fitness/internal/modules/auth/infrastructure/repository"
+	"github.com/4zure09/body-fitness/internal/modules/auth/infrastructure/token"
+	authhttp "github.com/4zure09/body-fitness/internal/modules/auth/transport/http"
 	healthapp "github.com/4zure09/body-fitness/internal/modules/health/application"
 	healthhttp "github.com/4zure09/body-fitness/internal/modules/health/transport/http"
 	"github.com/4zure09/body-fitness/internal/platform/config"
@@ -35,7 +40,18 @@ func Run(ctx context.Context, cfg config.Config, logger *slog.Logger) error {
 
 	healthService := healthapp.NewService(sqlDB)
 	healthHandler := healthhttp.NewHandler(healthService)
-	router := httpapi.NewRouter(logger, healthHandler)
+
+	authRepository := authrepo.NewGORMRepository(db)
+	passwordHasher := password.New()
+	tokenManager := token.NewManager(cfg.Auth)
+	authService, err := authapp.NewService(authRepository, passwordHasher, tokenManager)
+	if err != nil {
+		return fmt.Errorf("initialize authentication service: %w", err)
+	}
+	authMiddleware := authhttp.NewMiddleware(tokenManager)
+	authHandler := authhttp.NewHandler(authService, authMiddleware)
+
+	router := httpapi.NewRouter(logger, healthHandler, authHandler)
 	httpServer := server.New(cfg.HTTP, router)
 
 	return serve(ctx, httpServer, cfg.HTTP.ShutdownTimeout, logger)

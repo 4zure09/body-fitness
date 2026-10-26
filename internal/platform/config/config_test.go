@@ -23,3 +23,23 @@ func TestLoadUsesHTTPAddressFromEnvironment(t *testing.T) {
 		t.Fatalf("HTTP address = %q, want %q", cfg.HTTP.Address, ":9090")
 	}
 }
+
+func TestLoadRejectsDefaultJWTSecretOutsideLocal(t *testing.T) {
+	t.Setenv("APP_ENV", "production")
+	t.Setenv("JWT_SECRET", "local-development-secret-change-before-production-2026")
+
+	_, err := Load()
+	if err == nil {
+		t.Fatal("expected production environment to reject local JWT secret")
+	}
+}
+
+func TestLoadRejectsAccessTTLNotShorterThanRefreshTTL(t *testing.T) {
+	t.Setenv("JWT_ACCESS_TTL", "24h")
+	t.Setenv("JWT_REFRESH_TTL", "1h")
+
+	_, err := Load()
+	if err == nil {
+		t.Fatal("expected invalid JWT TTLs to return an error")
+	}
+}

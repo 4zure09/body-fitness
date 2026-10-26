@@ -24,6 +24,7 @@ type Config struct {
 	Environment string
 	HTTP        HTTP
 	Database    Database
+	Auth        Auth
 }
 
 type HTTP struct {
@@ -41,6 +42,14 @@ type Database struct {
 	ConnMaxLifetime time.Duration
 }
 
+type Auth struct {
+	JWTSecret  string
+	Issuer     string
+	Audience   string
+	AccessTTL  time.Duration
+	RefreshTTL time.Duration
+}
+
 func Load() (Config, error) {
 	httpConfig, err := loadHTTP()
 	if err != nil {
@@ -50,16 +59,39 @@ func Load() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+	authConfig, err := loadAuth()
+	if err != nil {
+		return Config{}, err
+	}
 
 	cfg := Config{
 		Environment: envOrDefault("APP_ENV", "local"),
 		HTTP:        httpConfig,
 		Database:    databaseConfig,
+		Auth:        authConfig,
 	}
 	if err := validate(cfg); err != nil {
 		return Config{}, err
 	}
 	return cfg, nil
+}
+
+func loadAuth() (Auth, error) {
+	accessTTL, err := durationEnv("JWT_ACCESS_TTL", 15*time.Minute)
+	if err != nil {
+		return Auth{}, err
+	}
+	refreshTTL, err := durationEnv("JWT_REFRESH_TTL", 30*24*time.Hour)
+	if err != nil {
+		return Auth{}, err
+	}
+	return Auth{
+		JWTSecret:  envOrDefault("JWT_SECRET", "local-development-secret-change-before-production-2026"),
+		Issuer:     envOrDefault("JWT_ISSUER", "body-fitness"),
+		Audience:   envOrDefault("JWT_AUDIENCE", "body-fitness-api"),
+		AccessTTL:  accessTTL,
+		RefreshTTL: refreshTTL,
+	}, nil
 }
 
 func loadHTTP() (HTTP, error) {
@@ -121,6 +153,18 @@ func validate(cfg Config) error {
 	}
 	if cfg.Database.MaxIdleConns < 0 || cfg.Database.MaxIdleConns > cfg.Database.MaxOpenConns {
 		return errors.New("DATABASE_MAX_IDLE_CONNS must be between zero and DATABASE_MAX_OPEN_CONNS")
+	}
+	if len(cfg.Auth.JWTSecret) < 32 {
+		return errors.New("JWT_SECRET must contain at least 32 characters")
+	}
+	if strings.TrimSpace(cfg.Auth.Issuer) == "" || strings.TrimSpace(cfg.Auth.Audience) == "" {
+		return errors.New("JWT_ISSUER and JWT_AUDIENCE must not be empty")
+	}
+	if cfg.Auth.AccessTTL >= cfg.Auth.RefreshTTL {
+		return errors.New("JWT_ACCESS_TTL must be shorter than JWT_REFRESH_TTL")
+	}
+	if cfg.Environment != "local" && cfg.Auth.JWTSecret == "local-development-secret-change-before-production-2026" {
+		return errors.New("JWT_SECRET must be changed outside the local environment")
 	}
 	return nil
 }

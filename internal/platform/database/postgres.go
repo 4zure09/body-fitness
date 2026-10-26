@@ -7,11 +7,14 @@ import (
 	"github.com/4zure09/body-fitness/internal/platform/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	gormlogger "gorm.io/gorm/logger"
 )
 
 func Open(ctx context.Context, cfg config.Database) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(cfg.DSN), &gorm.Config{
 		DisableAutomaticPing: true,
+		TranslateError:       true,
+		Logger:               gormlogger.Default.LogMode(gormlogger.Silent),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("initialize GORM: %w", err)

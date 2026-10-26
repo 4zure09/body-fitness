@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"time"
 
+	authhttp "github.com/4zure09/body-fitness/internal/modules/auth/transport/http"
 	healthhttp "github.com/4zure09/body-fitness/internal/modules/health/transport/http"
 	"github.com/4zure09/body-fitness/internal/platform/openapi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func NewRouter(logger *slog.Logger, health healthhttp.Handler) http.Handler {
+func NewRouter(logger *slog.Logger, health healthhttp.Handler, auth authhttp.Handler) http.Handler {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -25,7 +26,7 @@ func NewRouter(logger *slog.Logger, health healthhttp.Handler) http.Handler {
 	router.Get("/docs", openapi.Docs)
 
 	router.Route("/api/v1", func(api chi.Router) {
-		// Feature modules register their routes here through dedicated registrars.
+		auth.RegisterRoutes(api)
 	})
 
 	return router

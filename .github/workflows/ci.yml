@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: body_fitness
+          POSTGRES_USER: body_fitness
+          POSTGRES_PASSWORD: body_fitness
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U body_fitness -d body_fitness"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      DATABASE_DSN: postgres://body_fitness:body_fitness@localhost:5432/body_fitness?sslmode=disable
+      TEST_DATABASE_DSN: postgres://body_fitness:body_fitness@localhost:5432/body_fitness?sslmode=disable
+      JWT_SECRET: ci-only-secret-with-at-least-thirty-two-characters
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Apply database migrations
+        run: go run github.com/pressly/goose/v3/cmd/goose@v3.28.0 -dir db/migrations postgres "$DATABASE_DSN" up
+
+      - name: Test
+        run: go test -race -count=1 ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Build commands
+        run: go build ./cmd/...
