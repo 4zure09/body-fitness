@@ -9,6 +9,8 @@
 - [Hướng dẫn cài đặt môi trường](docs/INSTALLATION.md)
 - [Roadmap MVP theo phase và sprint](docs/MVP_ROADMAP.md)
 - [Kiến trúc và quy tắc tổ chức code](docs/ARCHITECTURE.md)
+- [Hướng dẫn tích hợp API cho Frontend](docs/API_INTEGRATION.md)
+- [API change backlog cho Frontend](docs/API_CHANGELOG.md)
 
 ## Định hướng kỹ thuật
 

@@ -106,3 +106,21 @@ Tách hàm khi một đoạn code có lý do thay đổi khác, cần test độ
 - Shutdown: graceful shutdown khi nhận `SIGINT` hoặc `SIGTERM`.
 - Health: `/health/live` kiểm tra process, `/health/ready` kiểm tra PostgreSQL.
 
+## 8. Quản trị API contract với Frontend
+
+OpenAPI tại `internal/platform/openapi/openapi.yaml` là contract máy đọc. Tài liệu
+`docs/API_INTEGRATION.md` là hướng dẫn tích hợp cho FE và `docs/API_CHANGELOG.md` là backlog
+phối hợp BE → FE.
+
+Mọi thay đổi thêm/sửa/deprecate/xóa endpoint, request, response, enum, auth, status code hoặc
+error code phải thực hiện trong cùng commit/PR:
+
+1. Cập nhật handler và test.
+2. Cập nhật OpenAPI.
+3. Cập nhật API integration guide nếu cách tích hợp bị ảnh hưởng.
+4. Thêm entry vào API change backlog với trạng thái `[ ] FE pending`.
+5. Ghi rõ breaking change và thời gian chuyển đổi nếu có.
+
+Không merge API change khi thiếu một trong các phần trên. FE chuyển backlog sang `[x] FE synced`
+sau khi tích hợp và kiểm tra regression; không xóa lịch sử thay đổi đã hoàn thành.
+
