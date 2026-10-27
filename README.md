@@ -42,6 +42,17 @@ Authentication API:
 - `GET /api/v1/auth/me` — yêu cầu access token
 - `GET /api/v1/admin/access-check` — yêu cầu role `admin`
 
+Catalog API (đọc công khai, ghi yêu cầu role `admin`):
+
+- `/api/v1/muscle-groups` — CRUD nhóm cơ
+- `/api/v1/equipment` — CRUD dụng cụ
+- `/api/v1/exercises` — CRUD bài tập, nhóm cơ chính/phụ và filter
+- `/api/v1/foods` — CRUD thực phẩm, calo và macro
+- `/api/v1/foods/{foodID}/servings` — CRUD khẩu phần và dinh dưỡng quy đổi
+
+Các endpoint danh sách hỗ trợ `page`, `page_size` và `q`. Bài tập hỗ trợ thêm
+`difficulty`, `equipment_id`, `muscle_group_id`; thực phẩm hỗ trợ thêm `brand`.
+
 Chạy toàn bộ stack bằng container:
 
 ```bash
@@ -56,6 +67,18 @@ sqlc generate
 ```
 
 Hai CLI này là development tools, không được nhúng vào runtime image. File migration và `sqlc.yaml` đã được đặt sẵn trong repo.
+
+Ứng dụng đọc kết nối database theo thứ tự `DATABASE_DSN`, sau đó `DATABASE_URL`, rồi mới
+dùng PostgreSQL local mặc định. Trên Railway, đặt biến tham chiếu trong API service:
+
+```text
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+```
+
+`Postgres` phải đúng với tên database service trong Railway. Không chép connection string
+hoặc mật khẩu thật vào source code. Host `*.railway.internal` chỉ truy cập được từ service
+trong cùng Railway project/environment; khi chạy API hoặc migration từ máy local, dùng
+`DATABASE_PUBLIC_URL` được Railway tạo sau khi bật Public Access cho PostgreSQL.
 
 Để cấp role `admin` cho một tài khoản đã đăng ký:
 

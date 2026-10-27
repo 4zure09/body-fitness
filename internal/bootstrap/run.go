@@ -13,8 +13,14 @@ import (
 	authrepo "github.com/4zure09/body-fitness/internal/modules/auth/infrastructure/repository"
 	"github.com/4zure09/body-fitness/internal/modules/auth/infrastructure/token"
 	authhttp "github.com/4zure09/body-fitness/internal/modules/auth/transport/http"
+	exerciseapp "github.com/4zure09/body-fitness/internal/modules/exercises/application"
+	exerciserepo "github.com/4zure09/body-fitness/internal/modules/exercises/infrastructure/repository"
+	exercisehttp "github.com/4zure09/body-fitness/internal/modules/exercises/transport/http"
 	healthapp "github.com/4zure09/body-fitness/internal/modules/health/application"
 	healthhttp "github.com/4zure09/body-fitness/internal/modules/health/transport/http"
+	nutritionapp "github.com/4zure09/body-fitness/internal/modules/nutrition/application"
+	nutritionrepo "github.com/4zure09/body-fitness/internal/modules/nutrition/infrastructure/repository"
+	nutritionhttp "github.com/4zure09/body-fitness/internal/modules/nutrition/transport/http"
 	"github.com/4zure09/body-fitness/internal/platform/config"
 	"github.com/4zure09/body-fitness/internal/platform/database"
 	"github.com/4zure09/body-fitness/internal/platform/httpapi"
@@ -51,7 +57,15 @@ func Run(ctx context.Context, cfg config.Config, logger *slog.Logger) error {
 	authMiddleware := authhttp.NewMiddleware(tokenManager)
 	authHandler := authhttp.NewHandler(authService, authMiddleware)
 
-	router := httpapi.NewRouter(logger, healthHandler, authHandler)
+	exerciseRepository := exerciserepo.NewGORMRepository(db)
+	exerciseService := exerciseapp.NewService(exerciseRepository)
+	exerciseHandler := exercisehttp.NewHandler(exerciseService, authMiddleware)
+
+	nutritionRepository := nutritionrepo.NewGORMRepository(db)
+	nutritionService := nutritionapp.NewService(nutritionRepository)
+	nutritionHandler := nutritionhttp.NewHandler(nutritionService, authMiddleware)
+
+	router := httpapi.NewRouter(logger, healthHandler, authHandler, exerciseHandler, nutritionHandler)
 	httpServer := server.New(cfg.HTTP, router)
 
 	return serve(ctx, httpServer, cfg.HTTP.ShutdownTimeout, logger)

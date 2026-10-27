@@ -166,6 +166,31 @@ Kiểm tra:
 - Liveness: <http://localhost:8080/health/live>
 - Readiness: <http://localhost:8080/health/ready>
 
+### Kết nối PostgreSQL trên Railway
+
+Backend hỗ trợ cả `DATABASE_DSN` và `DATABASE_URL`; nếu cả hai cùng tồn tại thì
+`DATABASE_DSN` được ưu tiên. Trong API service trên Railway, nên tạo reference variable:
+
+```text
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+```
+
+Thay `Postgres` bằng đúng tên database service. Reference variable giúp connection string
+tự cập nhật và giữ lưu lượng trong private network.
+
+Địa chỉ `*.railway.internal` không truy cập được từ PowerShell trên máy local. Muốn chạy
+API hoặc migration từ local vào Railway, bật Public Access/TCP Proxy của PostgreSQL rồi dùng
+giá trị `DATABASE_PUBLIC_URL`:
+
+```powershell
+$env:DATABASE_URL = "<DATABASE_PUBLIC_URL_FROM_RAILWAY>"
+
+goose -dir db/migrations postgres $env:DATABASE_URL up
+go run ./cmd/api
+```
+
+Không lưu connection string thật trong `.env.example`, source code hoặc Git.
+
 ### Cấp quyền admin ban đầu
 
 Đăng ký tài khoản trước, sau đó chạy management command:

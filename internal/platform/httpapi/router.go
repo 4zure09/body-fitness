@@ -6,13 +6,21 @@ import (
 	"time"
 
 	authhttp "github.com/4zure09/body-fitness/internal/modules/auth/transport/http"
+	exercisehttp "github.com/4zure09/body-fitness/internal/modules/exercises/transport/http"
 	healthhttp "github.com/4zure09/body-fitness/internal/modules/health/transport/http"
+	nutritionhttp "github.com/4zure09/body-fitness/internal/modules/nutrition/transport/http"
 	"github.com/4zure09/body-fitness/internal/platform/openapi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func NewRouter(logger *slog.Logger, health healthhttp.Handler, auth authhttp.Handler) http.Handler {
+func NewRouter(
+	logger *slog.Logger,
+	health healthhttp.Handler,
+	auth authhttp.Handler,
+	exercises exercisehttp.Handler,
+	nutrition nutritionhttp.Handler,
+) http.Handler {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -27,6 +35,8 @@ func NewRouter(logger *slog.Logger, health healthhttp.Handler, auth authhttp.Han
 
 	router.Route("/api/v1", func(api chi.Router) {
 		auth.RegisterRoutes(api)
+		exercises.RegisterRoutes(api)
+		nutrition.RegisterRoutes(api)
 	})
 
 	return router

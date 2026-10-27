@@ -11,6 +11,7 @@ import (
 
 const (
 	defaultHTTPAddress     = ":8080"
+	defaultDatabaseDSN     = "postgres://body_fitness:body_fitness@localhost:5432/body_fitness?sslmode=disable"
 	defaultReadTimeout     = 10 * time.Second
 	defaultWriteTimeout    = 15 * time.Second
 	defaultIdleTimeout     = 60 * time.Second
@@ -134,10 +135,7 @@ func loadDatabase() (Database, error) {
 		return Database{}, err
 	}
 	return Database{
-		DSN: envOrDefault(
-			"DATABASE_DSN",
-			"postgres://body_fitness:body_fitness@localhost:5432/body_fitness?sslmode=disable",
-		),
+		DSN:             databaseDSN(),
 		MaxOpenConns:    maxOpenConns,
 		MaxIdleConns:    maxIdleConns,
 		ConnMaxLifetime: connMaxLifetime,
@@ -146,7 +144,7 @@ func loadDatabase() (Database, error) {
 
 func validate(cfg Config) error {
 	if strings.TrimSpace(cfg.Database.DSN) == "" {
-		return errors.New("DATABASE_DSN must not be empty")
+		return errors.New("DATABASE_DSN or DATABASE_URL must not be empty")
 	}
 	if cfg.Database.MaxOpenConns < 1 {
 		return errors.New("DATABASE_MAX_OPEN_CONNS must be greater than zero")
@@ -167,6 +165,16 @@ func validate(cfg Config) error {
 		return errors.New("JWT_SECRET must be changed outside the local environment")
 	}
 	return nil
+}
+
+func databaseDSN() string {
+	if value := strings.TrimSpace(os.Getenv("DATABASE_DSN")); value != "" {
+		return value
+	}
+	if value := strings.TrimSpace(os.Getenv("DATABASE_URL")); value != "" {
+		return value
+	}
+	return defaultDatabaseDSN
 }
 
 func envOrDefault(key, fallback string) string {

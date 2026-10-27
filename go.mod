@@ -6,6 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.5.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0
+	github.com/shopspring/decimal v1.6.0
 	golang.org/x/crypto v0.58.0
 	gorm.io/driver/postgres v1.6.3
 	gorm.io/gorm v1.31.2

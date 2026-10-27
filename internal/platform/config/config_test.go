@@ -24,6 +24,32 @@ func TestLoadUsesHTTPAddressFromEnvironment(t *testing.T) {
 	}
 }
 
+func TestLoadUsesRailwayDatabaseURLWhenDSNIsMissing(t *testing.T) {
+	t.Setenv("DATABASE_DSN", "")
+	t.Setenv("DATABASE_URL", "postgresql://railway-user:secret@postgres.railway.internal:5432/railway")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if cfg.Database.DSN != "postgresql://railway-user:secret@postgres.railway.internal:5432/railway" {
+		t.Fatalf("database DSN = %q, want DATABASE_URL", cfg.Database.DSN)
+	}
+}
+
+func TestLoadPrefersDatabaseDSNOverDatabaseURL(t *testing.T) {
+	t.Setenv("DATABASE_DSN", "postgresql://local-override")
+	t.Setenv("DATABASE_URL", "postgresql://railway")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if cfg.Database.DSN != "postgresql://local-override" {
+		t.Fatalf("database DSN = %q, want DATABASE_DSN", cfg.Database.DSN)
+	}
+}
+
 func TestLoadRejectsDefaultJWTSecretOutsideLocal(t *testing.T) {
 	t.Setenv("APP_ENV", "production")
 	t.Setenv("JWT_SECRET", "local-development-secret-change-before-production-2026")

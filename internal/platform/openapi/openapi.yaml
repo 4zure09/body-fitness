@@ -6,8 +6,9 @@ info:
     API hỗ trợ quản lý bài tập, dinh dưỡng, chế độ cá nhân và tiến độ.
     Nội dung tư vấn chỉ mang tính tham khảo, không thay thế tư vấn y khoa.
 servers:
-  - url: http://localhost:8080
-    description: Local development
+  - url: /
+    description: Current API origin
+security: []
 paths:
   /health/live:
     get:
@@ -162,7 +163,574 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /api/v1/muscle-groups:
+    get:
+      operationId: listMuscleGroups
+      summary: Danh sách nhóm cơ
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          description: Paginated muscle groups
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MuscleGroupPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    post:
+      operationId: createMuscleGroup
+      summary: Tạo nhóm cơ
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/MuscleGroupInput"
+      responses:
+        "201":
+          description: Muscle group created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MuscleGroup"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/muscle-groups/{id}:
+    parameters:
+      - $ref: "#/components/parameters/ResourceID"
+    get:
+      operationId: getMuscleGroup
+      summary: Chi tiết nhóm cơ
+      responses:
+        "200":
+          description: Muscle group details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MuscleGroup"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateMuscleGroup
+      summary: Cập nhật nhóm cơ
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/MuscleGroupInput"
+      responses:
+        "200":
+          description: Muscle group updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MuscleGroup"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+    delete:
+      operationId: deleteMuscleGroup
+      summary: Xóa mềm nhóm cơ chưa được sử dụng
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Muscle group deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/equipment:
+    get:
+      operationId: listEquipment
+      summary: Danh sách dụng cụ
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          description: Paginated equipment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EquipmentPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    post:
+      operationId: createEquipment
+      summary: Tạo dụng cụ
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/EquipmentInput"
+      responses:
+        "201":
+          description: Equipment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Equipment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/equipment/{id}:
+    parameters:
+      - $ref: "#/components/parameters/ResourceID"
+    get:
+      operationId: getEquipment
+      summary: Chi tiết dụng cụ
+      responses:
+        "200":
+          description: Equipment details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Equipment"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateEquipment
+      summary: Cập nhật dụng cụ
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/EquipmentInput"
+      responses:
+        "200":
+          description: Equipment updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Equipment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+    delete:
+      operationId: deleteEquipment
+      summary: Xóa mềm dụng cụ chưa được sử dụng
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Equipment deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/exercises:
+    get:
+      operationId: listExercises
+      summary: Danh sách bài tập
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: difficulty
+          in: query
+          schema:
+            $ref: "#/components/schemas/Difficulty"
+        - name: equipment_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: muscle_group_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Paginated exercises
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExercisePage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    post:
+      operationId: createExercise
+      summary: Tạo bài tập
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/ExerciseInput"
+      responses:
+        "201":
+          description: Exercise created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exercise"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/InvalidReference"
+  /api/v1/exercises/{id}:
+    parameters:
+      - $ref: "#/components/parameters/ResourceID"
+    get:
+      operationId: getExercise
+      summary: Chi tiết bài tập
+      responses:
+        "200":
+          description: Exercise details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exercise"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateExercise
+      summary: Cập nhật bài tập
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/ExerciseInput"
+      responses:
+        "200":
+          description: Exercise updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exercise"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/InvalidReference"
+    delete:
+      operationId: deleteExercise
+      summary: Xóa mềm bài tập
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Exercise deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/foods:
+    get:
+      operationId: listFoods
+      summary: Danh sách thực phẩm
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: brand
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Paginated foods
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoodPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    post:
+      operationId: createFood
+      summary: Tạo thực phẩm cùng calo và macro
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/FoodInput"
+      responses:
+        "201":
+          description: Food created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Food"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/foods/{foodID}:
+    parameters:
+      - $ref: "#/components/parameters/FoodID"
+    get:
+      operationId: getFood
+      summary: Chi tiết thực phẩm, calo và macro
+      responses:
+        "200":
+          description: Food details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Food"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateFood
+      summary: Cập nhật thực phẩm, calo và macro
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/FoodInput"
+      responses:
+        "200":
+          description: Food updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Food"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+    delete:
+      operationId: deleteFood
+      summary: Xóa mềm thực phẩm và các khẩu phần liên quan
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Food deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/foods/{foodID}/servings:
+    parameters:
+      - $ref: "#/components/parameters/FoodID"
+    get:
+      operationId: listFoodServings
+      summary: Danh sách khẩu phần và dinh dưỡng quy đổi
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          description: Paginated food servings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServingPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      operationId: createFoodServing
+      summary: Tạo khẩu phần
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/ServingInput"
+      responses:
+        "201":
+          description: Serving created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Serving"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/foods/{foodID}/servings/{servingID}:
+    parameters:
+      - $ref: "#/components/parameters/FoodID"
+      - $ref: "#/components/parameters/ServingID"
+    get:
+      operationId: getFoodServing
+      summary: Chi tiết khẩu phần và dinh dưỡng quy đổi
+      responses:
+        "200":
+          description: Serving details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Serving"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateFoodServing
+      summary: Cập nhật khẩu phần
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/ServingInput"
+      responses:
+        "200":
+          description: Serving updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Serving"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+    delete:
+      operationId: deleteFoodServing
+      summary: Xóa khẩu phần
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Serving deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
 components:
+  parameters:
+    SearchQuery:
+      name: q
+      in: query
+      description: Tìm kiếm không phân biệt hoa thường theo tên
+      schema:
+        type: string
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    ResourceID:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    FoodID:
+      name: foodID
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ServingID:
+      name: servingID
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  requestBodies:
+    MuscleGroupInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MuscleGroupInput"
+    EquipmentInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EquipmentInput"
+    ExerciseInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ExerciseInput"
+    FoodInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FoodInput"
+    ServingInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ServingInput"
   securitySchemes:
     bearerAuth:
       type: http
@@ -183,6 +751,24 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
     Forbidden:
       description: Account disabled or role not permitted
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: Duplicate value or resource currently in use
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InvalidReference:
+      description: Referenced resource does not exist
       content:
         application/json:
           schema:
@@ -286,6 +872,313 @@ components:
         refresh_expires_at:
           type: string
           format: date-time
+    BodyRegion:
+      type: string
+      enum: [upper_body, lower_body, core, full_body]
+    Difficulty:
+      type: string
+      enum: [beginner, intermediate, advanced]
+    Involvement:
+      type: string
+      enum: [primary, secondary]
+    ReferenceUnit:
+      type: string
+      enum: [g, ml, unit]
+    MuscleGroupInput:
+      type: object
+      additionalProperties: false
+      required: [name, body_region]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        body_region:
+          $ref: "#/components/schemas/BodyRegion"
+        description:
+          type: string
+          maxLength: 2000
+          default: ""
+    MuscleGroup:
+      allOf:
+        - $ref: "#/components/schemas/MuscleGroupInput"
+        - type: object
+          required: [id, description, created_at, updated_at]
+          properties:
+            id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    EquipmentInput:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 2000
+          default: ""
+    Equipment:
+      allOf:
+        - $ref: "#/components/schemas/EquipmentInput"
+        - type: object
+          required: [id, description, created_at, updated_at]
+          properties:
+            id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    ExerciseInput:
+      type: object
+      additionalProperties: false
+      required: [name, instructions, difficulty, primary_muscle_ids]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 160
+        description:
+          type: string
+          maxLength: 4000
+          default: ""
+        instructions:
+          type: string
+          minLength: 2
+          maxLength: 10000
+        difficulty:
+          $ref: "#/components/schemas/Difficulty"
+        equipment_id:
+          type: [string, "null"]
+          format: uuid
+        primary_muscle_ids:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+        secondary_muscle_ids:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+    ExerciseMuscle:
+      type: object
+      required: [muscle_group, involvement]
+      properties:
+        muscle_group:
+          $ref: "#/components/schemas/MuscleGroup"
+        involvement:
+          $ref: "#/components/schemas/Involvement"
+    Exercise:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - instructions
+        - difficulty
+        - muscles
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        instructions:
+          type: string
+        difficulty:
+          $ref: "#/components/schemas/Difficulty"
+        equipment:
+          oneOf:
+            - $ref: "#/components/schemas/Equipment"
+            - type: "null"
+        muscles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExerciseMuscle"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Nutrients:
+      type: object
+      additionalProperties: false
+      required: [calories_kcal, protein_g, carbohydrates_g, fat_g, fiber_g]
+      properties:
+        calories_kcal:
+          type: number
+          minimum: 0
+        protein_g:
+          type: number
+          minimum: 0
+        carbohydrates_g:
+          type: number
+          minimum: 0
+        fat_g:
+          type: number
+          minimum: 0
+        fiber_g:
+          type: number
+          minimum: 0
+    FoodInput:
+      type: object
+      additionalProperties: false
+      required: [name, reference_amount, reference_unit, nutrients]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 160
+        brand:
+          type: [string, "null"]
+          maxLength: 160
+        description:
+          type: string
+          maxLength: 4000
+          default: ""
+        reference_amount:
+          type: number
+          exclusiveMinimum: 0
+        reference_unit:
+          $ref: "#/components/schemas/ReferenceUnit"
+        nutrients:
+          $ref: "#/components/schemas/Nutrients"
+    Food:
+      allOf:
+        - $ref: "#/components/schemas/FoodInput"
+        - type: object
+          required: [id, description, created_at, updated_at]
+          properties:
+            id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    ServingInput:
+      type: object
+      additionalProperties: false
+      required: [name, amount]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        amount:
+          type: number
+          exclusiveMinimum: 0
+    Serving:
+      type: object
+      required: [id, food_id, name, amount, unit, nutrition, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        food_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        amount:
+          type: number
+        unit:
+          $ref: "#/components/schemas/ReferenceUnit"
+        nutrition:
+          $ref: "#/components/schemas/Nutrients"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    MuscleGroupPage:
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/MuscleGroup"
+    EquipmentPage:
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Equipment"
+    ExercisePage:
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Exercise"
+    FoodPage:
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Food"
+    ServingPage:
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Serving"
+    PageMetadata:
+      type: object
+      required: [items, page, page_size, total]
+      properties:
+        items:
+          type: array
+          items: {}
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          format: int64
+          minimum: 0
     ErrorResponse:
       type: object
       required: [error]
