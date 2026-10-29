@@ -22,6 +22,7 @@ func NewRouter(
 	nutrition nutritionhttp.Handler,
 ) http.Handler {
 	router := chi.NewRouter()
+	router.Use(cors)
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(requestLogger(logger))

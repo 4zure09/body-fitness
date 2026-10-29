@@ -135,7 +135,7 @@ func loadDatabase() (Database, error) {
 		return Database{}, err
 	}
 	return Database{
-		DSN:             databaseDSN(),
+		DSN:             DatabaseDSN(),
 		MaxOpenConns:    maxOpenConns,
 		MaxIdleConns:    maxIdleConns,
 		ConnMaxLifetime: connMaxLifetime,
@@ -167,7 +167,7 @@ func validate(cfg Config) error {
 	return nil
 }
 
-func databaseDSN() string {
+func DatabaseDSN() string {
 	if value := strings.TrimSpace(os.Getenv("DATABASE_DSN")); value != "" {
 		return value
 	}

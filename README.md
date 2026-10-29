@@ -70,6 +70,16 @@ sqlc generate
 
 Hai CLI này là development tools, không được nhúng vào runtime image. File migration và `sqlc.yaml` đã được đặt sẵn trong repo.
 
+Docker image cung cấp binary `/migrate` dành riêng cho bước pre-deploy trên Railway. Cấu hình service:
+
+```text
+Pre-deploy Command: /migrate
+Start Command: /api
+Healthcheck Path: /health/ready
+```
+
+`/migrate` dùng `DATABASE_DSN`, sau đó `DATABASE_URL`, và dừng deployment nếu migration thất bại.
+
 Ứng dụng đọc kết nối database theo thứ tự `DATABASE_DSN`, sau đó `DATABASE_URL`, rồi mới
 dùng PostgreSQL local mặc định. Trên Railway, đặt biến tham chiếu trong API service:
 
